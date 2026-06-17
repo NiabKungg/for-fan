@@ -385,6 +385,7 @@ body {
   <section id="messages-section">
     <h2 class="section-title">💌 ข้อความจากใจ</h2>
     <div class="message-card" id="message-card"></div>
+    <button class="msg-btn" id="msg-btn">กดเพื่ออ่านข้อความอื่น ✨</button>
   </section>
 
   <p id="attribution">made with 💗 for fan</p>
@@ -572,7 +573,29 @@ function drawChart() {
 drawChart();
 
 /* ===== MESSAGE RANDOMIZER ===== */
-document.getElementById('message-card').textContent = 'ขอบคุณที่อยู่ด้วยกัน และรักกันเสมอมา รักตลอดไป จุ๊บๆ';
+var messages = [
+  'ขอบคุณที่อยู่ด้วยกัน และรักกันเสมอมา รักตลอดไป จุ๊บๆ',
+  'รอยยิ้มของเธอทำให้ทั้งวันสดใส'
+];
+var lastMsgIndex = -1;
+var msgCard = document.getElementById('message-card');
+var msgBtn = document.getElementById('msg-btn');
+
+function showRandomMessage() {
+  var idx;
+  do {
+    idx = Math.floor(Math.random() * messages.length);
+  } while (idx === lastMsgIndex && messages.length > 1);
+  lastMsgIndex = idx;
+  msgCard.classList.add('fading');
+  setTimeout(function() {
+    msgCard.textContent = messages[idx];
+    msgCard.classList.remove('fading');
+  }, 250);
+}
+
+msgBtn.addEventListener('click', showRandomMessage);
+showRandomMessage();
 
 /* ===== HEART PARTICLE ANIMATION ===== */
 var particlesContainer = document.getElementById('particles-container');
