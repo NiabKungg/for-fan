@@ -165,19 +165,6 @@ body {
   margin: 0 auto;
   position: relative;
 }
-#chart-section .chart-header {
-  font-family: var(--font-mono);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-#chart-section .chart-header .ticker {
-  color: var(--text);
-  font-weight: bold;
-}
 #chart-section .ticker-bar {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -203,13 +190,6 @@ body {
   height: auto;
   background: var(--surface);
   border-radius: var(--radius);
-}
-#chart-section .chart-title {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--gold);
-  margin-top: 0.5rem;
-  text-align: right;
 }
 .grid-line { stroke: #1a1a20; stroke-width: 0.5; }
 .axis-label { fill: var(--muted); font-family: var(--font-mono); font-size: 9px; }
@@ -368,10 +348,6 @@ body {
   </section>
 
   <section id="chart-section">
-    <div class="chart-header">
-      <span class="ticker">LOVE/THB</span>
-      <span id="chart-price">฿∞</span>
-    </div>
     <div class="ticker-bar">
       <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; </span>
       <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; </span>
@@ -379,7 +355,6 @@ body {
     <svg id="love-chart" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
       <g id="chart-content"></g>
     </svg>
-    <div class="chart-title">LOVE / THB</div>
   </section>
 
   <section id="messages-section">
@@ -567,8 +542,6 @@ function drawChart() {
     tooltipEl.classList.toggle('visible');
   });
 
-  /* update price display */
-  document.getElementById('chart-price').textContent = '฿' + prices[prices.length - 1].toFixed(2);
 }
 
 drawChart();
