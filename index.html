@@ -385,7 +385,6 @@ body {
   <section id="messages-section">
     <h2 class="section-title">💌 ข้อความจากใจ</h2>
     <div class="message-card" id="message-card"></div>
-    <button class="msg-btn" id="msg-btn">กดเพื่ออ่านข้อความอื่น ✨</button>
   </section>
 
   <p id="attribution">made with 💗 for fan</p>
@@ -573,42 +572,7 @@ function drawChart() {
 drawChart();
 
 /* ===== MESSAGE RANDOMIZER ===== */
-var messages = [
-  'ขอบคุณที่เข้ามาในชีวิตนะ 🤍',
-  'รอยยิ้มของเธอคือสิ่งที่ทำให้วันของฉันสดใสเสมอ',
-  'เธอคือ All-Time High ของหัวใจฉัน',
-  'ทุกวันที่มีเธอคือวันที่ดีที่สุด',
-  'ขอบคุณที่อยู่ข้างกันเสมอมา',
-  'ฉันโชคดีที่สุดที่ได้เจอเธอ',
-  'ต่อให้เวลาผ่านไปนานแค่ไหน ความรู้สึกนี้ก็ไม่มีวันเปลี่ยน',
-  'เธอคือคนที่ทำให้ฉันยิ้มได้แม้ในวันที่แย่ที่สุด',
-  'รักเธอมากกว่าที่คำพูดจะบรรยายได้',
-  'ขอบคุณที่อดทนกับฉันนะ',
-  'สิ่งที่ชอบที่สุดในตัวเธอคือ... ทุกอย่างเลย',
-  'เธอทำให้ชีวิตฉันมีความหมายมากขึ้นทุกวัน',
-  'กี่ครั้งที่ท้อ เธอก็อยู่ตรงนี้เสมอ ขอบคุณจริงๆ',
-  'ไม่ว่าเส้นกราฟชีวิตจะขึ้นหรือลง แต่กราฟความรักฉันมีแต่ขึ้น 📈',
-  'แค่อยากให้รู้ว่า... ฉันรักเธอนะ'
-];
-var lastMsgIndex = -1;
-var msgCard = document.getElementById('message-card');
-var msgBtn = document.getElementById('msg-btn');
-
-function showRandomMessage() {
-  var idx;
-  do {
-    idx = Math.floor(Math.random() * messages.length);
-  } while (idx === lastMsgIndex && messages.length > 1);
-  lastMsgIndex = idx;
-  msgCard.classList.add('fading');
-  setTimeout(function() {
-    msgCard.textContent = messages[idx];
-    msgCard.classList.remove('fading');
-  }, 250);
-}
-
-msgBtn.addEventListener('click', showRandomMessage);
-showRandomMessage();
+document.getElementById('message-card').textContent = 'ขอบคุณที่อยู่ด้วยกัน และรักกันเสมอมา รักตลอดไป จุ๊บๆ';
 
 /* ===== HEART PARTICLE ANIMATION ===== */
 var particlesContainer = document.getElementById('particles-container');
