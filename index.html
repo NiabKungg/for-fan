@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ถึงเธอ</title>
+<style>
+:root {
+  --bg: #0a0a0c;
+  --surface: #141418;
+  --gold: #d4a853;
+  --rose: #e8a0bf;
+  --text: #c8c8d0;
+  --muted: #6a6a76;
+  --green: #26a69a;
+  --red: #ef5350;
+  --radius: 8px;
+  --font-mono: 'Courier New', Courier, monospace;
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-serif);
+  overflow-x: hidden;
+}
+
+/* ===== PASSWORD GATE ===== */
+#password-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#password-gate.unlocked {
+  transform: translateY(-100%);
+}
+#password-gate h2 {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+#password-gate .pw-input-wrapper {
+  position: relative;
+}
+#password-gate input {
+  background: transparent;
+  border: 1px solid var(--muted);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  letter-spacing: 0.3em;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  width: 200px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.3s;
+}
+#password-gate input:focus {
+  border-color: var(--gold);
+}
+#password-gate .pw-error {
+  color: var(--rose);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  min-height: 1.2em;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#password-gate .pw-error.show { opacity: 1; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.shake { animation: shake 0.5s ease; }
+
+/* ===== MAIN CONTENT ===== */
+#main-content {
+  opacity: 0;
+  transition: opacity 0.8s ease 0.4s;
+}
+#main-content.visible { opacity: 1; }
+
+/* ===== HERO ===== */
+#hero {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 600px; height: 600px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(212,168,83,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+#hero .hero-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  color: var(--gold);
+  font-family: var(--font-serif);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease forwards;
+}
+#hero .hero-sub {
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: var(--rose);
+  margin-top: 1rem;
+  max-width: 500px;
+  line-height: 1.7;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease 0.2s forwards;
+}
+#hero .hero-date {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  letter-spacing: 0.15em;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease 0.4s forwards;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== CHART ===== */
+#chart-section {
+  padding: 3rem 1rem 5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+#chart-section .chart-header {
+  font-family: var(--font-mono);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+#chart-section .chart-header .ticker {
+  color: var(--text);
+  font-weight: bold;
+}
+#chart-section .ticker-bar {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid #1a1a20;
+  border-bottom: 1px solid #1a1a20;
+  padding: 0.35rem 0;
+  margin-bottom: 1rem;
+  position: relative;
+}
+#chart-section .ticker-bar .ticker-scroll {
+  display: inline-block;
+  animation: scrollTicker 20s linear infinite;
+}
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+#chart-section svg {
+  width: 100%;
+  height: auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+#chart-section .chart-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-top: 0.5rem;
+  text-align: right;
+}
+.grid-line { stroke: #1a1a20; stroke-width: 0.5; }
+.axis-label { fill: var(--muted); font-family: var(--font-mono); font-size: 9px; }
+.milestone-dot { cursor: pointer; }
+.tooltip-group { opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.tooltip-group.visible { opacity: 1; }
+.tooltip-bg { fill: var(--surface); stroke: var(--rose); stroke-width: 1; rx: 4; }
+.tooltip-text { fill: var(--text); font-family: var(--font-mono); font-size: 9px; }
+
+/* ===== MESSAGES ===== */
+#messages-section {
+  padding: 4rem 1.5rem;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+#messages-section .section-title {
+  font-size: 1.6rem;
+  color: var(--gold);
+  margin-bottom: 2rem;
+}
+#messages-section .message-card {
+  background: var(--surface);
+  border: 1px solid #1e1e26;
+  border-radius: var(--radius);
+  padding: 2.5rem 1.5rem;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--text);
+  transition: opacity 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+#messages-section .message-card::before {
+  content: '"';
+  position: absolute;
+  top: 10px; left: 20px;
+  font-size: 4rem;
+  color: var(--gold);
+  opacity: 0.15;
+  font-family: var(--font-serif);
+  line-height: 1;
+}
+#messages-section .message-card.fading { opacity: 0; }
+#messages-section .msg-btn {
+  margin-top: 1.5rem;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+#messages-section .msg-btn:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+/* ===== MUSIC PLAYER ===== */
+#music-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 900;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid #1e1e26;
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s, transform 0.2s;
+}
+#music-toggle:hover,
+#music-toggle.playing {
+  border-color: var(--gold);
+}
+#music-toggle:active { transform: scale(0.95); }
+
+/* ===== PARTICLES ===== */
+#particles-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200px) scale(0.3) rotate(var(--rot, 20deg));
+  }
+}
+
+.particle {
+  position: absolute;
+  animation: float-up var(--dur, 2s) ease-out forwards;
+  font-size: var(--size, 1.5rem);
+  user-select: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  #hero { min-height: 60vh; padding: 3rem 1rem; }
+  #chart-section { padding: 2rem 0.5rem 3rem; }
+  #messages-section { padding: 3rem 1rem; }
+  #messages-section .message-card {
+    padding: 1.8rem 1rem;
+    font-size: 1rem;
+  }
+  #messages-section .section-title { font-size: 1.3rem; }
+}
+
+#attribution {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1.6s forwards;
+}
+</style>
+</head>
+<body>
+
+<div id="password-gate">
+  <h2>Enter Password</h2>
+  <div class="pw-input-wrapper">
+    <input type="password" id="pw-input" maxlength="6" placeholder="______" autofocus>
+  </div>
+  <div class="pw-error" id="pw-error"></div>
+</div>
+
+<div id="main-content">
+
+  <section id="hero">
+    <h1 class="hero-title">ถึงเธอ</h1>
+    <p class="hero-sub">ทุกวินาทีที่มีเธอคือ All-Time High ของฉัน</p>
+    <p class="hero-date">07.07.25 — ∞</p>
+  </section>
+
+  <section id="chart-section">
+    <div class="chart-header">
+      <span class="ticker">LOVE/THB</span>
+      <span id="chart-price">฿∞</span>
+    </div>
+    <div class="ticker-bar">
+      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; </span>
+      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; </span>
+    </div>
+    <svg id="love-chart" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+      <g id="chart-content"></g>
+    </svg>
+    <div class="chart-title">LOVE / THB</div>
+  </section>
+
+  <section id="messages-section">
+    <h2 class="section-title">💌 ข้อความจากใจ</h2>
+    <div class="message-card" id="message-card"></div>
+    <button class="msg-btn" id="msg-btn">กดเพื่ออ่านข้อความอื่น ✨</button>
+  </section>
+
+  <p id="attribution">made with 💗 for fan</p>
+
+</div>
+
+<div id="particles-container"></div>
+
+<audio id="bg-music" src="fellow fellow Proud OFFICIAL MV.mp3" loop preload="auto"></audio>
+<button id="music-toggle" title="เล่นเพลง">🎵</button>
+
+<script>
+(function() {
+
+/* ===== PASSWORD GATE ===== */
+var pwGate = document.getElementById('password-gate');
+var pwInput = document.getElementById('pw-input');
+var pwError = document.getElementById('pw-error');
+var mainContent = document.getElementById('main-content');
+
+pwInput.addEventListener('input', function() {
+  var val = pwInput.value;
+  if (val.length === 6) {
+    if (val === '070725') {
+      pwError.classList.remove('show');
+      pwGate.classList.add('unlocked');
+      mainContent.classList.add('visible');
+    } else {
+      pwInput.classList.add('shake');
+      pwError.textContent = 'ยังไม่ใช่รหัสที่ถูกต้องนะ... 💔';
+      pwError.classList.add('show');
+      setTimeout(function() {
+        pwInput.value = '';
+        pwInput.classList.remove('shake');
+        pwInput.focus();
+      }, 500);
+    }
+  } else {
+    pwError.classList.remove('show');
+  }
+});
+
+/* ===== SVG LINE CHART ===== */
+function generatePrices(count) {
+  var prices = [];
+  var price = 100 + Math.random() * 20;
+  for (var i = 0; i < count; i++) {
+    var trend = 2 + Math.random() * 4;
+    var noise = (Math.random() - 0.45) * 8;
+    price = price + trend + noise;
+    prices.push(price);
+  }
+  return prices;
+}
+
+function drawChart() {
+  var svg = document.getElementById('love-chart');
+  var g = document.getElementById('chart-content');
+  var prices = generatePrices(36);
+  var minPrice = Math.floor(Math.min.apply(null, prices) - 10);
+  var maxPrice = Math.ceil(Math.max.apply(null, prices) + 10);
+
+  var W = 800, H = 400;
+  var padLeft = 55, padRight = 20, padTop = 20, padBottom = 30;
+  var chartW = W - padLeft - padRight;
+  var chartH = H - padTop - padBottom;
+
+  /* area gradient */
+  var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  var grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  grad.setAttribute('id', 'areaGrad');
+  grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+  grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+  var stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', 'var(--gold)'); stop1.setAttribute('stop-opacity', '0.25');
+  var stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', 'var(--gold)'); stop2.setAttribute('stop-opacity', '0');
+  grad.appendChild(stop1); grad.appendChild(stop2);
+  defs.appendChild(grad);
+  svg.insertBefore(defs, g);
+
+  /* grid lines + y labels */
+  var gridLines = 5;
+  for (var i = 0; i <= gridLines; i++) {
+    var yVal = minPrice + ((maxPrice - minPrice) * (i / gridLines));
+    var yPos = padTop + chartH - ((yVal - minPrice) / (maxPrice - minPrice) * chartH);
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', padLeft); line.setAttribute('x2', W - padRight);
+    line.setAttribute('y1', yPos); line.setAttribute('y2', yPos);
+    line.setAttribute('class', 'grid-line');
+    g.appendChild(line);
+    var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', padLeft - 6); label.setAttribute('y', yPos + 3);
+    label.setAttribute('text-anchor', 'end'); label.setAttribute('class', 'axis-label');
+    label.textContent = Math.round(yVal);
+    g.appendChild(label);
+  }
+
+  /* build line + area points */
+  var points = [];
+  for (var i = 0; i < prices.length; i++) {
+    var x = padLeft + i * (chartW / (prices.length - 1));
+    var y = padTop + chartH - ((prices[i] - minPrice) / (maxPrice - minPrice) * chartH);
+    points.push({ x: x, y: y, price: prices[i] });
+  }
+
+  var lineD = 'M' + points.map(function(p) { return p.x + ' ' + p.y; }).join(' L');
+  var areaD = lineD + ' L' + (padLeft + chartW) + ' ' + (padTop + chartH) + ' L' + padLeft + ' ' + (padTop + chartH) + ' Z';
+
+  /* area fill */
+  var area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', areaD);
+  area.setAttribute('fill', 'url(#areaGrad)');
+  g.appendChild(area);
+
+  /* line */
+  var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', lineD);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', 'var(--gold)');
+  path.setAttribute('stroke-width', '2.5');
+  path.setAttribute('stroke-linejoin', 'round');
+  g.appendChild(path);
+
+  /* milestone at index 8 */
+  var mp = points[8];
+  var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  dot.setAttribute('cx', mp.x);
+  dot.setAttribute('cy', mp.y);
+  dot.setAttribute('r', 6);
+  dot.setAttribute('fill', 'var(--rose)');
+  dot.setAttribute('stroke', 'var(--gold)');
+  dot.setAttribute('stroke-width', '2');
+  dot.setAttribute('id', 'milestone-dot');
+  g.appendChild(dot);
+
+  /* tooltip */
+  var tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  tooltip.setAttribute('id', 'chart-tooltip');
+  tooltip.setAttribute('class', 'tooltip-group');
+  var tipW = 140, tipH = 32;
+  var rx = mp.x - tipW / 2;
+  var ry = mp.y - tipH - 16;
+  if (rx < padLeft) rx = padLeft;
+  if (rx + tipW > W - padRight) rx = W - padRight - tipW;
+
+  var bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  bg.setAttribute('x', rx); bg.setAttribute('y', ry);
+  bg.setAttribute('width', tipW); bg.setAttribute('height', tipH);
+  bg.setAttribute('class', 'tooltip-bg');
+  tooltip.appendChild(bg);
+
+  var t1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t1.setAttribute('x', rx + 6); t1.setAttribute('y', ry + 13);
+  t1.setAttribute('class', 'tooltip-text');
+  t1.textContent = '07.07.25';
+  tooltip.appendChild(t1);
+
+  var t2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t2.setAttribute('x', rx + 6); t2.setAttribute('y', ry + 26);
+  t2.setAttribute('class', 'tooltip-text');
+  t2.textContent = 'วันที่เราเริ่มคบกัน 💕';
+  tooltip.appendChild(t2);
+
+  var hoverTarget = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  hoverTarget.setAttribute('x', mp.x - 14); hoverTarget.setAttribute('y', mp.y - 14);
+  hoverTarget.setAttribute('width', 28); hoverTarget.setAttribute('height', 28);
+  hoverTarget.setAttribute('fill', 'transparent');
+  hoverTarget.setAttribute('style', 'cursor: pointer;');
+  tooltip.appendChild(hoverTarget);
+  g.appendChild(tooltip);
+
+  var tooltipEl = document.getElementById('chart-tooltip');
+  hoverTarget.addEventListener('mouseenter', function() { tooltipEl.classList.add('visible'); });
+  hoverTarget.addEventListener('mouseleave', function() { tooltipEl.classList.remove('visible'); });
+  hoverTarget.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    tooltipEl.classList.toggle('visible');
+  });
+
+  /* update price display */
+  document.getElementById('chart-price').textContent = '฿' + prices[prices.length - 1].toFixed(2);
+}
+
+drawChart();
+
+/* ===== MESSAGE RANDOMIZER ===== */
+var messages = [
+  'ขอบคุณที่เข้ามาในชีวิตนะ 🤍',
+  'รอยยิ้มของเธอคือสิ่งที่ทำให้วันของฉันสดใสเสมอ',
+  'เธอคือ All-Time High ของหัวใจฉัน',
+  'ทุกวันที่มีเธอคือวันที่ดีที่สุด',
+  'ขอบคุณที่อยู่ข้างกันเสมอมา',
+  'ฉันโชคดีที่สุดที่ได้เจอเธอ',
+  'ต่อให้เวลาผ่านไปนานแค่ไหน ความรู้สึกนี้ก็ไม่มีวันเปลี่ยน',
+  'เธอคือคนที่ทำให้ฉันยิ้มได้แม้ในวันที่แย่ที่สุด',
+  'รักเธอมากกว่าที่คำพูดจะบรรยายได้',
+  'ขอบคุณที่อดทนกับฉันนะ',
+  'สิ่งที่ชอบที่สุดในตัวเธอคือ... ทุกอย่างเลย',
+  'เธอทำให้ชีวิตฉันมีความหมายมากขึ้นทุกวัน',
+  'กี่ครั้งที่ท้อ เธอก็อยู่ตรงนี้เสมอ ขอบคุณจริงๆ',
+  'ไม่ว่าเส้นกราฟชีวิตจะขึ้นหรือลง แต่กราฟความรักฉันมีแต่ขึ้น 📈',
+  'แค่อยากให้รู้ว่า... ฉันรักเธอนะ'
+];
+var lastMsgIndex = -1;
+var msgCard = document.getElementById('message-card');
+var msgBtn = document.getElementById('msg-btn');
+
+function showRandomMessage() {
+  var idx;
+  do {
+    idx = Math.floor(Math.random() * messages.length);
+  } while (idx === lastMsgIndex && messages.length > 1);
+  lastMsgIndex = idx;
+  msgCard.classList.add('fading');
+  setTimeout(function() {
+    msgCard.textContent = messages[idx];
+    msgCard.classList.remove('fading');
+  }, 250);
+}
+
+msgBtn.addEventListener('click', showRandomMessage);
+showRandomMessage();
+
+/* ===== HEART PARTICLE ANIMATION ===== */
+var particlesContainer = document.getElementById('particles-container');
+var heartEmojis = ['💕','💗','💖','💘','💝','❤️','💛','✨'];
+
+document.addEventListener('click', function(e) {
+  var count = Math.floor(Math.random() * 4) + 3;
+  for (var i = 0; i < count; i++) {
+    var particle = document.createElement('span');
+    particle.className = 'particle';
+    particle.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+
+    var size = (Math.random() * 2 + 1).toFixed(2);
+    var dur = (Math.random() * 2 + 1.5).toFixed(2);
+    var rot = (Math.random() * 60 - 30).toFixed(0);
+
+    particle.style.cssText = [
+      'left:' + (e.clientX + (Math.random() * 40 - 20)) + 'px',
+      'top:' + (e.clientY + (Math.random() * 10 - 5)) + 'px',
+      '--size:' + size + 'rem',
+      '--dur:' + dur + 's',
+      '--rot:' + rot + 'deg'
+    ].join(';');
+
+    particlesContainer.appendChild(particle);
+
+    setTimeout(function() {
+      if (particle.parentNode) particle.parentNode.removeChild(particle);
+    }, parseFloat(dur) * 1000 + 200);
+  }
+});
+
+/* ===== MUSIC PLAYER ===== */
+var bgMusic = document.getElementById('bg-music');
+var musicToggle = document.getElementById('music-toggle');
+var isPlaying = false;
+
+musicToggle.addEventListener('click', function() {
+  if (isPlaying) {
+    bgMusic.pause();
+    musicToggle.textContent = '🎵';
+    musicToggle.classList.remove('playing');
+  } else {
+    bgMusic.play().catch(function() {});
+    musicToggle.textContent = '🎶';
+    musicToggle.classList.add('playing');
+  }
+  isPlaying = !isPlaying;
+});
+
+})();
+</script>
+</body>
+</html>
