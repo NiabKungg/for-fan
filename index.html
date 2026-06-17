@@ -363,7 +363,7 @@ body {
 
   <section id="hero">
     <h1 class="hero-title">ถึงเธอ</h1>
-    <p class="hero-sub">ทุกวินาทีที่มีเธอคือ All-Time High ของฉัน</p>
+    <p class="hero-sub">ทุกวินาทีที่มีเธอคือที่สุดในหัวใจ</p>
     <p class="hero-date">07.07.25 — ∞</p>
   </section>
 
@@ -373,8 +373,8 @@ body {
       <span id="chart-price">฿∞</span>
     </div>
     <div class="ticker-bar">
-      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; </span>
-      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ATH: EVERY DAY &nbsp;|&nbsp; </span>
+      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; </span>
+      <span class="ticker-scroll">LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; LOVE ▲ +∞ &nbsp;|&nbsp; ที่สุดในหัวใจ &nbsp;|&nbsp; </span>
     </div>
     <svg id="love-chart" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
       <g id="chart-content"></g>
@@ -413,6 +413,7 @@ pwInput.addEventListener('input', function() {
       pwError.classList.remove('show');
       pwGate.classList.add('unlocked');
       mainContent.classList.add('visible');
+      bgMusic.play().catch(function() {});
     } else {
       pwInput.classList.add('shake');
       pwError.textContent = 'ยังไม่ใช่รหัสที่ถูกต้องนะ... 💔';
