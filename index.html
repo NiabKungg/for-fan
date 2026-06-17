@@ -258,6 +258,17 @@ body {
   }
 }
 
+@keyframes float-up-far {
+  0% {
+    opacity: 0.8;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110vh) scale(0.3) rotate(var(--rot, 20deg));
+  }
+}
+
 .particle {
   position: absolute;
   animation: float-up var(--dur, 2s) ease-out forwards;
@@ -356,7 +367,9 @@ pwInput.addEventListener('input', function() {
 /* ===== MESSAGE RANDOMIZER ===== */
 var messages = [
   'ขอบคุณที่อยู่ด้วยกัน และรักกันเสมอมา รักตลอดไป จุ๊บๆ',
-  'รอยยิ้มของเธอทำให้ทั้งวันสดใส'
+  'รอยยิ้มของเธอทำให้ทั้งวันสดใส',
+  'ขอบคุณที่อยู่ด้วยกันนะ',
+  'รักที่สุดเลย'
 ];
 var lastMsgIndex = -1;
 var msgCard = document.getElementById('message-card');
@@ -383,7 +396,7 @@ var particlesContainer = document.getElementById('particles-container');
 var heartEmojis = ['💕','💗','💖','💘','💝','❤️','💛','✨'];
 
 document.addEventListener('click', function(e) {
-  var count = Math.floor(Math.random() * 4) + 3;
+  var count = Math.floor(Math.random() * 10) + 8;
   for (var i = 0; i < count; i++) {
     var particle = document.createElement('span');
     particle.className = 'particle';
@@ -408,6 +421,27 @@ document.addEventListener('click', function(e) {
     }, parseFloat(dur) * 1000 + 200);
   }
 });
+
+/* floating ambient hearts */
+function spawnAmbientHeart() {
+  var heart = document.createElement('span');
+  heart.className = 'particle';
+  heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+  heart.style.animationName = 'float-up-far';
+  heart.style.cssText = [
+    'left:' + (Math.random() * window.innerWidth) + 'px',
+    'top:' + (window.innerHeight + 20) + 'px',
+    '--size:' + (Math.random() * 1.5 + 0.8).toFixed(2) + 'rem',
+    '--dur:' + (Math.random() * 6 + 4).toFixed(2) + 's',
+    '--rot:' + (Math.random() * 40 - 20).toFixed(0) + 'deg',
+    'animation-name: float-up-far'
+  ].join(';');
+  particlesContainer.appendChild(heart);
+  setTimeout(function() {
+    if (heart.parentNode) heart.parentNode.removeChild(heart);
+  }, 11000);
+}
+setInterval(spawnAmbientHeart, 800);
 
 /* ===== MUSIC PLAYER ===== */
 var bgMusic = document.getElementById('bg-music');
